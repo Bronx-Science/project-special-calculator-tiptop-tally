@@ -5,18 +5,12 @@ import 'package:math_expressions/math_expressions.dart';
 /*
 need:
 option for custom tip
+  -implement
 
 formatting needed
+  - display something like Tip: ____
   - subtotal 
-    - needs to be placed in the top
     - contained needs to be used to thin out the box
-  
-  - tip
-    - needs container to reformat
-
-  - total
-    - another container needed
-    - round the subtotal + tip to the nearest dollar
 */
 
 
@@ -35,6 +29,7 @@ class _CalculatorViewState extends State<CalculatorView> {
   String equation = "0";
   String result = "0";
   String expression = "";
+  String total = '0';
   double equationFontSize = 38.0;
   double resultFontSize = 48.0;
   buttonPressed(String buttonText) {
@@ -75,6 +70,7 @@ class _CalculatorViewState extends State<CalculatorView> {
         Tips temp = Tips(_exp, equation, result);
         tipsList.add(temp);
         equation = '0';
+        total = temp.getTotal();
         
       } else {
         if (equation == "0") {
@@ -221,14 +217,14 @@ class _CalculatorViewState extends State<CalculatorView> {
               ],
             ),
             const SizedBox(height: 20),
-            Row (
+            Row ( // find total + reformat
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Container(
                   child: Text('Total:', style: const TextStyle(color: Colors.white, fontSize: 50))
                 ),
                 Container(
-                  child: Text('0', style: const TextStyle(color: Colors.white, fontSize: 50))
+                  child: Text(total, style: const TextStyle(color: Colors.white, fontSize: 50))
                 )
               ],
             )
@@ -241,8 +237,9 @@ class _CalculatorViewState extends State<CalculatorView> {
 
 class Tips {
   String subtotal, percentage, tip;
-
+  
   Tips(this.subtotal, this.percentage, this.tip);
-  String getTotal() => subtotal + tip;
-  String toString() => 'Percentage: $percentage, Tip: $tip, Subtotal: $subtotal';
+  String getTotal() => (double.parse(subtotal) + double.parse(tip)).round().toString();
+  @override
+  String toString() => 'Percentage: $percentage, Tip: $tip, Subtotal: $subtotal, Total: ${getTotal()}';
 }
