@@ -7,8 +7,12 @@ need:
 option for custom tip
   -implement
 
+problem with clear button
+  -needs to clear out the expression
+
 formatting needed
   - display something like Tip: ____
+    - round the tip to the hundreds place
   - subtotal 
     - contained needs to be used to thin out the box
 */
@@ -25,6 +29,7 @@ class CalculatorView extends StatefulWidget {
 class _CalculatorViewState extends State<CalculatorView> {
 
   final TextEditingController _expressionTEC = TextEditingController();
+  final TextEditingController _tipTEC = TextEditingController();
 
   String equation = "0";
   String result = "0";
@@ -47,10 +52,30 @@ class _CalculatorViewState extends State<CalculatorView> {
       return result;
     }
 
+    String toDecimal(String percentage) {
+      String numberString = percentage.replaceAll('%', '').trim();
+      
+      int length = numberString.length;
+      if (length <= 2) {
+        numberString = numberString.padLeft(3, '0');
+        length = numberString.length;
+      }
+      String decimalString = numberString.substring(0, length - 2) + '.' + numberString.substring(length - 2);
+
+      return decimalString;
+    }
+
     setState(() {
       if (buttonText.contains('=')) {
         var _exp = _expressionTEC.text;
+        var _customTip = _tipTEC.text;
+        equation = _customTip.isNotEmpty ? '%$_customTip' : _exp;
+        String percentageToDecimal = '*${toDecimal(equation)}'; //
+        print(equation);
+        print(percentageToDecimal);
         expression = _exp + equation;
+
+        //replace custom tip with 
         expression = expression.replaceAll('15%', '*0.15');
         expression = expression.replaceAll('20%', '*0.2');
         expression = expression.replaceAll('25%', '*0.25');
@@ -141,7 +166,7 @@ class _CalculatorViewState extends State<CalculatorView> {
           children: [
             TextField(
               controller: _expressionTEC, 
-              keyboardType: const TextInputType.numberWithOptions(decimal: true), // need to parse information from this
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
               scrollPadding: const EdgeInsets.all(0),
               decoration: 
                 const InputDecoration(
@@ -197,23 +222,30 @@ class _CalculatorViewState extends State<CalculatorView> {
               ],
             ),
             const SizedBox(height: 10),
-            TextField(
-              controller: _expressionTEC, 
-              keyboardType: const TextInputType.numberWithOptions(decimal: true), // need to parse information from this
-              scrollPadding: const EdgeInsets.all(0),
-              decoration: 
-                const InputDecoration(
-                  prefixIcon: Icon(Icons.percent),
-                  hintText: 'Enter Custom Tip:',
-                  border: OutlineInputBorder(),
-                ),
+            Container(
+              width: 190,
+              height: 90,
+              padding: const EdgeInsets.all(20.0),
+              child: TextField(
+                controller: _tipTEC, 
+                keyboardType: const TextInputType.numberWithOptions(decimal: true), // need to parse information from this
+                scrollPadding: const EdgeInsets.all(0),
+                decoration: 
+                  const InputDecoration(
+                    prefixIcon: Icon(Icons.percent),
+                    hintText: 'Custom Tip',
+                    border: OutlineInputBorder(),
+                  ),
+              ),
+              
             ),
+              
             const SizedBox(height:10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 calcButton('=', Colors.orange, () => buttonPressed('=')),
-                calcButton('Clear', Colors.orange, ()=>buttonPressed('Clear')),
+                calcButton('Clear', Colors.orange, ()=>buttonPressed('Clear')), // on press make exp = '0';
               ],
             ),
             const SizedBox(height: 20),
