@@ -4,15 +4,12 @@ import 'package:math_expressions/math_expressions.dart';
 
 /*
 need:
-option for custom tip
-  -implement
 
 problem with clear button
   -needs to clear out the expression
 
 formatting needed
   - display something like Tip: ____
-    - round the tip to the hundreds place
   - subtotal 
     - contained needs to be used to thin out the box
 */
@@ -66,19 +63,27 @@ class _CalculatorViewState extends State<CalculatorView> {
     }
 
     setState(() {
-      if (buttonText.contains('=')) {
-        var _exp = _expressionTEC.text;
-        var _customTip = _tipTEC.text;
-        equation = _customTip.isNotEmpty ? '%$_customTip' : _exp;
-        String percentageToDecimal = '*${toDecimal(equation)}'; //
-        print(equation);
-        print(percentageToDecimal);
-        expression = _exp + equation;
+      
+      if (buttonText == 'Clear') {
+        equation = '0';
+        result = '0';
+        _expressionTEC.text = '';
+        _tipTEC.text = '';
+        total = '0';
+      } else if (buttonText.contains('15%')) {
+        _tipTEC.text = '15';
+      } else if (buttonText.contains('20%')) {
+        _tipTEC.text = '20';
+      } else if (buttonText.contains('25%')) {
+        _tipTEC.text = '25';
+      }else if (buttonText.contains('=')) {
+        var _exp = _expressionTEC.text; // balance
+        var _customTip = _tipTEC.text; // custom tip
+        
+        equation = '%$_customTip';
+        String computation = '*${toDecimal(equation)}'; 
 
-        //replace custom tip with 
-        expression = expression.replaceAll('15%', '*0.15');
-        expression = expression.replaceAll('20%', '*0.2');
-        expression = expression.replaceAll('25%', '*0.25');
+        expression = _exp + computation; // final computation
 
         try {
           Parser p = Parser();
@@ -104,7 +109,6 @@ class _CalculatorViewState extends State<CalculatorView> {
           equation = equation + buttonText;
         }
       }
-      
     });
   }
 
@@ -164,16 +168,20 @@ class _CalculatorViewState extends State<CalculatorView> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            TextField(
-              controller: _expressionTEC, 
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              scrollPadding: const EdgeInsets.all(0),
-              decoration: 
-                const InputDecoration(
-                  prefixIcon: Icon(Icons.attach_money_outlined),
-                  hintText: 'Enter Subtotal',
-                  border: OutlineInputBorder(),
-                ),
+            Container(
+              width: 300,
+              height: 100,
+              child: TextField(
+                controller: _expressionTEC, 
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                scrollPadding: const EdgeInsets.all(0),
+                decoration: 
+                  const InputDecoration(
+                    prefixIcon: Icon(Icons.attach_money_outlined),
+                    hintText: 'Enter Subtotal',
+                    border: OutlineInputBorder(),
+                  ),
+              ),
             ),
             Align(
               alignment: Alignment.bottomRight,
@@ -194,20 +202,20 @@ class _CalculatorViewState extends State<CalculatorView> {
                                     color: Colors.white, fontSize: 80))),
                       ],
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(20),
-                          child: Text(equation,
-                              style: const TextStyle(
-                                fontSize: 40,
-                                color: Colors.white38,
-                              )),
-                        ),
-                        const SizedBox(height: 10),
-                      ],
-                    )
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.end,
+                    //   children: [
+                    //     Padding(
+                    //       padding: const EdgeInsets.all(20),
+                    //       child: Text(equation,
+                    //           style: const TextStyle(
+                    //             fontSize: 40,
+                    //             color: Colors.white38,
+                    //           )),
+                    //     ),
+                    //     const SizedBox(height: 10),
+                    //   ],
+                    // )
                   ],
                 ),
               ),
@@ -245,7 +253,7 @@ class _CalculatorViewState extends State<CalculatorView> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 calcButton('=', Colors.orange, () => buttonPressed('=')),
-                calcButton('Clear', Colors.orange, ()=>buttonPressed('Clear')), // on press make exp = '0';
+                calcButton('Clear', Colors.orange, () => buttonPressed('Clear')), // on press make exp = '0';
               ],
             ),
             const SizedBox(height: 20),
