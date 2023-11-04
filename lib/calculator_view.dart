@@ -2,19 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:calculator_app/calcButton.dart';
 import 'package:math_expressions/math_expressions.dart';
 
-/*
-need:
-
-problem with clear button
-  -needs to clear out the expression
-
-formatting needed
-  - display something like Tip: ____
-  - subtotal 
-    - contained needs to be used to thin out the box
-*/
-
-
 List<Tips> tipsList = [];
 class CalculatorView extends StatefulWidget {
   const CalculatorView({super.key});
@@ -36,9 +23,6 @@ class _CalculatorViewState extends State<CalculatorView> {
   double resultFontSize = 48.0;
   buttonPressed(String buttonText) {
     // used to check if the result contains a decimal
-    if (buttonText == 'Custom') {
-
-    }
     String doesContainDecimal(dynamic result) {
       if (result.toString().contains('.')) {
         List<String> splitDecimal = result.toString().split('.');
@@ -50,8 +34,10 @@ class _CalculatorViewState extends State<CalculatorView> {
     }
 
     String toDecimal(String percentage) {
+      if (percentage.contains('.')) {
+        return percentage;
+      }
       String numberString = percentage.replaceAll('%', '').trim();
-      
       int length = numberString.length;
       if (length <= 2) {
         numberString = numberString.padLeft(3, '0');
@@ -62,8 +48,7 @@ class _CalculatorViewState extends State<CalculatorView> {
       return decimalString;
     }
 
-    setState(() {
-      
+    setState(() { 
       if (buttonText == 'Clear') {
         equation = '0';
         result = '0';
@@ -76,13 +61,11 @@ class _CalculatorViewState extends State<CalculatorView> {
         _tipTEC.text = '20';
       } else if (buttonText.contains('25%')) {
         _tipTEC.text = '25';
-      }else if (buttonText.contains('=')) {
+      } else if (buttonText.contains('=')) {
         var _exp = _expressionTEC.text; // balance
         var _customTip = _tipTEC.text; // custom tip
-        
         equation = '%$_customTip';
-        String computation = '*${toDecimal(equation)}'; 
-
+        String computation = '*' + toDecimal(equation);
         expression = _exp + computation; // final computation
 
         try {
@@ -100,7 +83,7 @@ class _CalculatorViewState extends State<CalculatorView> {
         Tips temp = Tips(_exp, equation, result);
         tipsList.add(temp);
         equation = '0';
-        total = temp.getTotal();
+        total = temp.calculateTotal().toString();
         
       } else {
         if (equation == "0") {
@@ -168,13 +151,15 @@ class _CalculatorViewState extends State<CalculatorView> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
+            const SizedBox(height: 10),
             Container(
               width: 300,
-              height: 100,
+              height: 50,
               child: TextField(
                 controller: _expressionTEC, 
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 scrollPadding: const EdgeInsets.all(0),
+                cursorColor: Colors.white,
                 decoration: 
                   const InputDecoration(
                     prefixIcon: Icon(Icons.attach_money_outlined),
@@ -183,53 +168,6 @@ class _CalculatorViewState extends State<CalculatorView> {
                   ),
               ),
             ),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    const SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Text(result,
-                                textAlign: TextAlign.left,
-                                style: const TextStyle(
-                                    color: Colors.white, fontSize: 80))),
-                      ],
-                    ),
-                    // Row(
-                    //   mainAxisAlignment: MainAxisAlignment.end,
-                    //   children: [
-                    //     Padding(
-                    //       padding: const EdgeInsets.all(20),
-                    //       child: Text(equation,
-                    //           style: const TextStyle(
-                    //             fontSize: 40,
-                    //             color: Colors.white38,
-                    //           )),
-                    //     ),
-                    //     const SizedBox(height: 10),
-                    //   ],
-                    // )
-                  ],
-                ),
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                calcButton('25%', Colors.white10, () => buttonPressed('25%')),
-                calcButton('20%', Colors.white10, () => buttonPressed('20%')),
-                calcButton("15%", Colors.white10, () => buttonPressed('15%')),
-                
-              ],
-            ),
-            const SizedBox(height: 10),
             Container(
               width: 190,
               height: 90,
@@ -245,18 +183,43 @@ class _CalculatorViewState extends State<CalculatorView> {
                     border: OutlineInputBorder(),
                   ),
               ),
-              
             ),
-              
+          
+            const SizedBox(height: 10),
+            Wrap(
+              alignment: WrapAlignment.spaceEvenly,
+              spacing: 32,
+              runSpacing: 64,
+              children: [
+                calcButton('25%', Colors.white10, () => buttonPressed('25%')),
+                calcButton('20%', Colors.white10, () => buttonPressed('20%')),
+                calcButton("15%", Colors.white10, () => buttonPressed('15%')),
+              ],
+            ),
             const SizedBox(height:10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            Wrap(
+              alignment: WrapAlignment.spaceEvenly,
+              spacing: 32,
+              runSpacing: 64,
               children: [
                 calcButton('=', Colors.orange, () => buttonPressed('=')),
                 calcButton('Clear', Colors.orange, () => buttonPressed('Clear')), // on press make exp = '0';
               ],
             ),
             const SizedBox(height: 20),
+            
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Container(
+                  child: Text('Tip:', style: const TextStyle(color: Colors.white, fontSize: 50))
+                ),
+                Container(
+                  child: Text(((double.parse(result)*10.round())/10).toString(), style: const TextStyle(color: Colors.white, fontSize: 50))
+                )
+              ],
+            ),
+            const SizedBox(height: 10),
             Row ( // find total + reformat
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -264,10 +227,10 @@ class _CalculatorViewState extends State<CalculatorView> {
                   child: Text('Total:', style: const TextStyle(color: Colors.white, fontSize: 50))
                 ),
                 Container(
-                  child: Text(total, style: const TextStyle(color: Colors.white, fontSize: 50))
+                  child: Text(double.parse(total).toStringAsFixed(2), style: const TextStyle(color: Colors.white, fontSize: 50)),
                 )
-              ],
-            )
+              ]
+            ),
         ],
       ),
     )
@@ -277,9 +240,25 @@ class _CalculatorViewState extends State<CalculatorView> {
 
 class Tips {
   String subtotal, percentage, tip;
-  
-  Tips(this.subtotal, this.percentage, this.tip);
-  String getTotal() => (double.parse(subtotal) + double.parse(tip)).round().toString();
+  double total = 0;
+  double tipNum = 0;
+
+  Tips(this.subtotal, this.percentage, this.tip) {
+    tipNum = double.parse(tip);
+    total = calculateTotal();
+  }
+
+  double calculateTotal() {
+    if (double.tryParse(subtotal) == null) {
+      return 0.0; // Handle error case appropriately
+    } else {
+      return double.parse(subtotal) + tipNum;
+    }
+  }
+
   @override
-  String toString() => 'Percentage: $percentage, Tip: $tip, Subtotal: $subtotal, Total: ${getTotal()}';
+  String toString() => 'Percentage: $percentage, Tip: ${tipNum.toStringAsFixed(2)}, Subtotal: $subtotal, Total: ${total.toStringAsFixed(2)}';
 }
+
+
+
