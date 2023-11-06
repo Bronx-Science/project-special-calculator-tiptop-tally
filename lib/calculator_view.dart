@@ -102,10 +102,10 @@ class _CalculatorViewState extends State<CalculatorView> {
 
     return Scaffold(
       key: scaffoldKey,
-      backgroundColor: Colors.grey,
+      backgroundColor: Color.fromARGB(255, 134, 177, 127),
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.grey,
+        backgroundColor: Color.fromARGB(255, 255, 253, 208),
         leading: IconButton(
           icon: const Icon(Icons.settings, color: Colors.blue),
           onPressed: () {
@@ -121,7 +121,7 @@ class _CalculatorViewState extends State<CalculatorView> {
         actions: const [
           Padding(
             padding: EdgeInsets.only(top: 18.0),
-            child: Text('Tip Calculator',style: TextStyle(color: Colors.white38)),
+            child: Text('Tip Calculator',style: TextStyle(color: Color.fromARGB(255, 255, 253, 208))),
             ),
             SizedBox(width: 20),
         ], 
@@ -151,7 +151,7 @@ class _CalculatorViewState extends State<CalculatorView> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const SizedBox(height: 10),
+            const SizedBox(height: 30),
             Container(
               width: 300,
               height: 50,
@@ -191,9 +191,9 @@ class _CalculatorViewState extends State<CalculatorView> {
               spacing: 32,
               runSpacing: 64,
               children: [
-                calcButton('25%', Colors.white10, () => buttonPressed('25%')),
-                calcButton('20%', Colors.white10, () => buttonPressed('20%')),
-                calcButton("15%", Colors.white10, () => buttonPressed('15%')),
+                calcButton('25%', Color.fromARGB(255, 255, 253, 208), () => buttonPressed('25%')),
+                calcButton('20%', Color.fromARGB(255, 255, 253, 208), () => buttonPressed('20%')),
+                calcButton("15%", Color.fromARGB(255, 255, 253, 208), () => buttonPressed('15%')),
               ],
             ),
             const SizedBox(height:10),
@@ -202,32 +202,36 @@ class _CalculatorViewState extends State<CalculatorView> {
               spacing: 32,
               runSpacing: 64,
               children: [
-                calcButton('=', Colors.orange, () => buttonPressed('=')),
-                calcButton('Clear', Colors.orange, () => buttonPressed('Clear')), // on press make exp = '0';
+                calcButton('=', Colors.green, () => buttonPressed('=')),
+                calcButton('Clear', Colors.green, () => buttonPressed('Clear')), // on press make exp = '0';
               ],
             ),
-            const SizedBox(height: 20),
-            
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            const SizedBox(height: 30),
+            Container(),
+            Wrap(
+              alignment: WrapAlignment.spaceEvenly,
+              spacing: 32,
+              runSpacing: 64,
               children: [
                 Container(
-                  child: Text('Tip:', style: const TextStyle(color: Colors.white, fontSize: 50))
+                  child: Text('Tip:', style: const TextStyle(color: Colors.black, fontSize: 40))
                 ),
                 Container(
-                  child: Text(((double.parse(result)*10.round())/10).toString(), style: const TextStyle(color: Colors.white, fontSize: 50))
+                  child: Text(((double.parse(result)*10.round())/10).toString(), style: const TextStyle(color: Colors.black, fontSize: 40))
                 )
               ],
             ),
             const SizedBox(height: 10),
-            Row ( // find total + reformat
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            Wrap ( // find total + reformat
+              alignment: WrapAlignment.spaceEvenly,
+              spacing: 32,
+              runSpacing: 64,
               children: [
                 Container(
-                  child: Text('Total:', style: const TextStyle(color: Colors.white, fontSize: 50))
+                  child: Text('Total:', style: const TextStyle(color: Colors.black, fontSize: 40))
                 ),
                 Container(
-                  child: Text(double.parse(total).toStringAsFixed(2), style: const TextStyle(color: Colors.white, fontSize: 50)),
+                  child: Text(double.parse(total).toStringAsFixed(2), style: const TextStyle(color: Colors.black, fontSize: 40)),
                 )
               ]
             ),
