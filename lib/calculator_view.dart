@@ -127,6 +127,7 @@ class _CalculatorViewState extends State<CalculatorView> {
         ], 
       ),
       drawer: Drawer (
+        backgroundColor: const Color.fromARGB(255, 255, 253, 208),
         child: ListView(
           children: [
             ListTile(
