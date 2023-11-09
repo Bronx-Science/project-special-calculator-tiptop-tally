@@ -217,7 +217,12 @@ class _CalculatorViewState extends State<CalculatorView> {
                   child: Text('Tip:', style: const TextStyle(color: Colors.black, fontSize: 40))
                 ),
                 Container(
-                  child: Text(((double.parse(result)*10.round())/10).toString(), style: const TextStyle(color: Colors.black, fontSize: 40))
+                  if (double.tryParse(result) != null) {
+                    child: Text(((double.parse(result)*10.round())/10).toString(), style: const TextStyle(color: Colors.black, fontSize: 40))
+                  } else {
+                    child: Text((result).toString(), style: const TextStyle(color: Colors.black, fontSize: 40))
+                  }
+                  
                 )
               ],
             ),
@@ -231,7 +236,7 @@ class _CalculatorViewState extends State<CalculatorView> {
                   child: Text('Total:', style: const TextStyle(color: Colors.black, fontSize: 40))
                 ),
                 Container(
-                  child: Text(double.parse(total).toStringAsFixed(2), style: const TextStyle(color: Colors.black, fontSize: 40)),
+                  child: Text((total).toStringAsFixed(2), style: const TextStyle(color: Colors.black, fontSize: 40)),
                 )
               ]
             ),
@@ -244,7 +249,7 @@ class _CalculatorViewState extends State<CalculatorView> {
 
 class Tips {
   String subtotal, percentage, tip;
-  double total = 0;
+  String total = '0';
   double tipNum = 0;
 
   Tips(this.subtotal, this.percentage, this.tip) {
@@ -252,16 +257,26 @@ class Tips {
     total = calculateTotal();
   }
 
-  double calculateTotal() {
+  boolean error = false;
+  if (double.tryParse(subtotal)==null || double.tryParse(percentage)==null || double.tryParse(tip)==null)
+    boolean = true;
+
+  String calculateTotal() {
     if (double.tryParse(subtotal) == null) {
-      return 0.0; // Handle error case appropriately
+      return 'ERROR'; // Handle error case appropriately
     } else {
-      return double.parse(subtotal) + tipNum;
+      return (double.parse(subtotal) + tipNum).toString();
     }
   }
 
   @override
-  String toString() => 'Percentage: $percentage, Tip: ${tipNum.toStringAsFixed(2)}, Subtotal: $subtotal, Total: ${total.toStringAsFixed(2)}';
+  String toString() {
+    if (error = false) {
+      return 'Percentage: $percentage, Tip: ${tipNum.toStringAsFixed(2)}, Subtotal: $subtotal, Total: ${total.toStringAsFixed(2)}';
+    } else {
+      return 'Percentage: ERROR, Tip: ERROR, Subtotal: ERROR, Total: ERROR';
+    }
+  }
 }
 
 
